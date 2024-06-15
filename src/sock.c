@@ -9,6 +9,11 @@
 #include "url.h"
 #include "util.h"
 
+
+#if MG_ENABLE_EPOLL && MG_ARCH == MG_ARCH_WIN32
+#include "./wepoll/wepoll.h"
+#endif
+
 #if MG_ENABLE_SOCKET
 
 #ifndef closesocket

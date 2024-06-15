@@ -7,6 +7,15 @@
 #include "timer.h"
 #include "tls.h"
 
+#if MG_ENABLE_EPOLL
+#if MG_ARCH == MG_ARCH_WIN32
+#define EPOLL_CLOEXEC 0
+#include "./wepoll/wepoll.h"
+#else
+#define epoll_close(epfd) close(epfd)
+#endif
+#endif
+
 size_t mg_vprintf(struct mg_connection *c, const char *fmt, va_list *ap) {
   size_t old = c->send.len;
   mg_vxprintf(mg_pfn_iobuf, &c->send, fmt, ap);
@@ -244,7 +253,7 @@ void mg_mgr_free(struct mg_mgr *mgr) {
 #endif
   MG_DEBUG(("All connections closed"));
 #if MG_ENABLE_EPOLL
-  if (mgr->epoll_fd >= 0) close(mgr->epoll_fd), mgr->epoll_fd = -1;
+  if (mgr->epoll_fd >= 0) epoll_close(mgr->epoll_fd), mgr->epoll_fd = -1;
 #endif
   mg_tls_ctx_free(mgr);
 }
