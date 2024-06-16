@@ -943,6 +943,18 @@ void mg_tls_init(struct mg_connection* c, const struct mg_tls_opts* opts) {
                 goto fail;
         }
 
+        if (opts->name.len > 0) {
+                struct wintls_s *ssl = (struct wintls_s *) tls->ssl;
+                if (ssl->sni != NULL) {
+                        free(ssl->sni);
+                }
+                ssl->sni = (char *) malloc(opts->name.len + 1);
+                if (ssl->sni != NULL) {
+                        memcpy(ssl->sni, opts->name.buf, opts->name.len);
+                        ssl->sni[opts->name.len] = '\0';
+                }
+        }
+ 
         c->tls = tls;
         c->is_tls = 1;
         c->is_tls_hs = 1;
