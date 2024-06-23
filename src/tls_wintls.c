@@ -451,7 +451,7 @@ static int schannel_connect_step1(struct wintls_s* ssl)
         SecBufferDesc secure_buffer_desc_out = { 0 };
         init_sec_buffer_desc(&secure_buffer_desc_out, SECBUFFER_VERSION, 1, secure_buffer_out);
 
-        SECURITY_STATUS sec_status = InitializeSecurityContext(ssl->ssl_ctx, NULL, ssl->sni, context_requirements, 0, 0, NULL, 0, &ssl->sechandle,
+        SECURITY_STATUS sec_status = InitializeSecurityContextA(ssl->ssl_ctx, NULL, ssl->sni, context_requirements, 0, 0, NULL, 0, &ssl->sechandle,
                 &secure_buffer_desc_out, &context_attributes, &life_time);
 
         if (sec_status != SEC_I_CONTINUE_NEEDED) {
@@ -554,7 +554,7 @@ static int schannel_connect_step2(struct wintls_s* ssl)
                 SecBufferDesc secure_buffer_desc_out = { 0 };
                 init_sec_buffer_desc(&secure_buffer_desc_out, SECBUFFER_VERSION, 3, secure_buffer_out);
                 printd("h2:%d\n", in_buffer_size);
-                SECURITY_STATUS sec_status = InitializeSecurityContext(ssl->ssl_ctx, &ssl->sechandle, ssl->sni, context_requirements, 0, 0, &secure_buffer_desc_in, 0,
+                SECURITY_STATUS sec_status = InitializeSecurityContextA(ssl->ssl_ctx, &ssl->sechandle, ssl->sni, context_requirements, 0, 0, &secure_buffer_desc_in, 0,
                         &ssl->sechandle, &secure_buffer_desc_out, &context_attributes, &life_time);
 
                 printd("h2 0x%x inbuf[1] type=%d %d inbuf[0]=%d\n", sec_status, secure_buffer_in[1].BufferType, secure_buffer_in[1].cbBuffer, secure_buffer_in[0].cbBuffer);
