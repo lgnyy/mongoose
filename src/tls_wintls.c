@@ -831,7 +831,9 @@ int hssl_read(hssl_t _ssl, void* buf, int len)
                         // Incomplete message, we shuold keep it so it will be decrypted on the next call to recv().
                         // Shift the remaining buffer to the beginning and break the loop.
 
-                        memmove(ssl->buffer_to_decrypt_, ssl->buffer_to_decrypt_ + ssl->buffer_to_decrypt_offset_, encrypted_buffer_len - ssl->buffer_to_decrypt_offset_);
+                        if (ssl->buffer_to_decrypt_offset_ > 0) {
+                                memmove(ssl->buffer_to_decrypt_, ssl->buffer_to_decrypt_ + ssl->buffer_to_decrypt_offset_, encrypted_buffer_len - ssl->buffer_to_decrypt_offset_);
+                        }
 
                         break;
                 }
@@ -840,8 +842,8 @@ int hssl_read(hssl_t _ssl, void* buf, int len)
                 ssl->buffer_to_decrypt_offset_ = encrypted_buffer_len - extra;
         }
         ssl->buffer_to_decrypt_offset_ = encrypted_buffer_len - ssl->buffer_to_decrypt_offset_;
-        return hssl_read(_ssl, buf, len);
-}
+        return (ssl->dec_len_ > 0) ? hssl_read(_ssl, buf, len) : 0;
+ }
 
 int hssl_write(hssl_t _ssl, const void* buf, int len)
 {
